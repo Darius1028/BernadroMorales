@@ -1,6 +1,6 @@
-import { createSlice, AnyAction } from "@reduxjs/toolkit";
+import { createSlice, AnyAction, current } from "@reduxjs/toolkit";
 import { getData } from "./data.thunks";
-import { store, RootState } from './../../store';
+import { RootState } from './../../store';
 
 export interface IHits {
   objectID: string;
@@ -15,7 +15,7 @@ export interface IHitsPerPage {
   hits: IHits[];
 }
 
-export interface ITypeLanguage {
+export interface Item {
   nbHits: number;
   page: number;
   nbPages: number;
@@ -25,23 +25,26 @@ export interface ITypeLanguage {
   params: string;
 }
 
-export interface LanguagesState {
+export interface dataState {
   loading: boolean;
   error: string | null;
   page: number | null;
   query: string | null;
-  data: ITypeLanguage | null;
+
+  params: string;
+  items: Item[]; 
 }
 
-const initialState: LanguagesState = {
+const initialState: dataState = {
   loading: false,
   error: null,
-  data: null,
   page: null,
-  query: null
+  query: null,
+  params: '',
+  items: []
 };
 
-const getDataState = (state: RootState): LanguagesState => state.data.list;
+const getDataState = (state: RootState): dataState => state.data.list;
 const getError = (state: RootState): string | null => getDataState(state).error;
 const getLoading = (state: RootState): boolean => getDataState(state).loading;
 
@@ -52,31 +55,40 @@ export const selectors = {
 };
 
 export const extraReducers = {
-  [getData.pending.type]: (state: LanguagesState, action: AnyAction): void => {
+  [getData.pending.type]: (state: dataState = initialState , action: AnyAction): void => {
     state.loading = true;
     state.error = null;
     state.query = null;
     state.page = null;
+    if(!state.items) {
+      state.items = [];
+    }
   },
-  [getData.fulfilled.type]: (state: LanguagesState, {payload}: AnyAction): void => {
-
-    state.loading = false;
-    state.query = payload.data.query;
-    state.page = payload.data.page;
-    state.data = payload.data;
+  [getData.fulfilled.type]: (state: dataState, {payload}: AnyAction): void => {
+    if( payload.data ) 
+    {
+      state.loading = false;
+      state.query = payload.data.query;
+      state.page = payload.data.page;
+      state.params = payload.data.params;
+      if( state.items.filter( item => item.params === payload.data.params).length === 0 )
+      {
+        state.items = [...state.items, payload.data ];
+      }  
+    }
   },
-  [getData.rejected.type]: (state: LanguagesState, action: AnyAction): void => {
+  [getData.rejected.type]: (state: dataState, action: AnyAction): void => {
     state.loading = false;
     state.error = action.payload;
   },
 };
 
 const dataSlice = createSlice({
-  name: "data",
+  name: 'data',
   initialState,
   reducers: {
-    clearData: (state: LanguagesState) => {
-      state.data = null;
+    clearData: (state: dataState) => {
+      state.items = [];
     },
   },
   extraReducers,

@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
 import { Row, Col } from "antd";
 import {
   HeartOutlined,
-  HeartFilled,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import { useSelector } from "react-redux";
-import { RootState } from "../slices/rootReducer";
-import { selectors, IHits} from "../slices/infoApi/data";
 
-export const Items = () => {
-  const [hits, setHits] = useState<IHits[] | undefined>(undefined);
-  const info = useSelector((state: RootState) => selectors.getDataState(state));
+import { IHits, Item } from "../slices/infoApi/data";
+
+
+interface Props {
+  item: Item
+}
+
+export const Items = ( { item }: Props  ) => {
+
 
     const handleClickRow = (url: string) => {
       window.open(url);
@@ -21,14 +22,11 @@ export const Items = () => {
       window.open(url);
     };
 
-    useEffect(() => { 
-      setHits( info.data?.hits )
-   }, [info] );
 
   return (
     <>
-      {Array.isArray(hits)
-        ? hits.map((item: IHits) => (
+      {Array.isArray(item.hits)
+        ? item.hits.map((item: IHits) => (
           <Col span={12} >
             <Row className={"wrap"}>
               <Col span={22} className={"description"} 

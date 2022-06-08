@@ -1,32 +1,44 @@
 import { useState, useEffect } from "react";
 import { Row, Col, Radio, Select, Avatar, Image } from "antd";
 import { getData, IPage  } from '../slices/infoApi/data.thunks';
-import { action } from '../slices/infoApi/data';
+import { action, selectors, Item } from '../slices/infoApi/data';
 import { Items } from './items';
 import { PaginationFooter } from './paginationFooter';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { LanguageTypes } from './interfaces';
+
+import { RootState } from "../slices/rootReducer";
 
 const { Option } = Select;
 
 export const Dashboard = () => {
-  const [page, setPage] = useState<IPage | undefined>(undefined);
+  const [item, setItem] = useState<Item>( { nbHits: 0, page: 0, nbPages: 0, hitsPerPage: 0, query: '', hits: [], params:'' });
   const dispatch = useDispatch();
+  const data = useSelector((state: RootState) => selectors.getDataState(state));
 
-
-  useEffect(() => { 
-     dispatch<any>(action.clearData())
-  });
 
   const handleChange = (item: string) => { 
-    setPage( { page: 0, value: item } );
     getItems( { page: 0, value: item } );
   };
 
-  const getItems = (value: IPage) => {
-    dispatch<any>(getData(value));
-  };
 
+  useEffect(() => { 
+    const temp:Item = data.items.filter( (item:Item) => item.params === data.params)[0];
+    if( temp ){
+      setItem(temp);
+    }
+ }, [data] );
+
+
+  const getItems = async (value: IPage) => {
+    const temp:Item = data.items.filter( (item:Item) => item.page === value.page && item.query === value.value )[0];
+    if( temp ){
+      setItem(temp);
+    }
+    else {
+      await dispatch<any>(getData(value));
+    }
+  };
 
   return (
     <div className="table">
@@ -56,9 +68,9 @@ export const Dashboard = () => {
         </Col>
       </Row>
       <Row gutter={[24, 24]}>
-          <Items />
+          <Items item={item} />
       </Row>
-      <PaginationFooter getItems={getItems}  />
+      <PaginationFooter getItems={getItems} item={item} />
     </div>
   );
 };

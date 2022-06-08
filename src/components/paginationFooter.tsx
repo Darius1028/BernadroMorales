@@ -1,41 +1,34 @@
 
 import { useState, useEffect } from "react";
-import type, { Pagination, Row, PaginationProps } from "antd";
-import { useSelector } from "react-redux";
-import { RootState } from "../slices/rootReducer";
-import { selectors } from "../slices/infoApi/data";
+import { Pagination, Row, PaginationProps } from "antd";
+import { Item } from "../slices/infoApi/data";
 import { IPage  } from '../slices/infoApi/data.thunks';
 
 
 interface Props {
+  item: Item
   getItems: ( page: IPage ) => void;
 }
 
-export const PaginationFooter = ( {getItems}: Props ) => {
+export const PaginationFooter = ( { getItems, item }: Props ) => {
   
-  const dataPagination = useSelector((state: RootState) => selectors.getDataState(state));
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-
+  const [currentPage, setCurrentPage] = useState<number>(1)
   const onChange: PaginationProps['onChange'] = page => {
-    getItems( { page: page - 1 , value: dataPagination.query ??  ""  } )
+    getItems( { page: page - 1 , value: item.query ??  ""  } )
   };
  
   useEffect(() => { 
-    let temp = dataPagination.page?? 0; 
-    console.log(dataPagination);
+    let temp = item.page?? 0; 
     setCurrentPage( temp + 1 );
- }, [dataPagination] );
+ }, [item] );
 
-
- 
   return (
     <>
-      {dataPagination
+      {item
         ? <Row className={"radioButton"}>
         <Pagination 
         current={ currentPage } 
-        total={dataPagination.data?.nbPages ?? 0 } 
+        total={item.nbPages ?? 0 } 
         onChange={onChange}
         hideOnSinglePage={true}
         showSizeChanger={false}

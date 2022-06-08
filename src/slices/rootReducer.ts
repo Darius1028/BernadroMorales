@@ -23,3 +23,7 @@ const persistConfig = {
 export const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export type RootState = ReturnType<typeof persistedReducer>
+
+export interface ThunkAPI {
+  state: RootState;
+}

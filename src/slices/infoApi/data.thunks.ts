@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, AsyncThunk } from '@reduxjs/toolkit';
 
 export interface IPage {
   page?: number;
@@ -8,16 +8,15 @@ export interface IPage {
 }
 
 export const getData = createAsyncThunk(
-  "slice/infoApi", 
-  async ( page: IPage, thunkAPI) => {
+  'slice/infoApi', 
+  async ( page: IPage ) => {
     try {
       const res = await axios({
-        method: "get",
+        method: 'get',
         url: `${process.env.REACT_APP_API_URL}/api/v1/search_by_date?query=${page.value}&page=${page.page}&hitsPerPage=8`,
       });
-      
       return res;
-    } catch (err) {
+    } catch (err: any) {
       return err;
     }
   }

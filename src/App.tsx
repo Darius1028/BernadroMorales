@@ -1,14 +1,16 @@
 import React, { ReactNode } from "react";
 import { Provider } from "react-redux";
-import { store } from "./store";
-
-import RootRouter  from "./components/router";
+import { store, persistor } from "./store";
+import { PersistGate } from "redux-persist/lib/integration/react";
+import RootRouter from "./components/router";
 
 class App extends React.Component {
   render(): ReactNode {
     return (
       <Provider store={store}>
-        <RootRouter />
+        <PersistGate persistor={persistor}>
+          <RootRouter />
+        </PersistGate>
       </Provider>
     );
   }
