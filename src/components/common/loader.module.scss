@@ -1,0 +1,14 @@
+@import "../../variables.scss";
+
+.appLoaderContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.appLoader {
+    font-size: 64px;
+    color: rgba($color: $white, $alpha: 0.25) !important;
+}

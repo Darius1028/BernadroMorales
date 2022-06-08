@@ -1,11 +1,16 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import { persistedReducer, history } from './slices/rootReducer';
+import { routerMiddleware } from "connected-react-router";
+
+
+const preloadedState = {};
 
 export const store = configureStore({
-  reducer: {
-    counter: counterReducer,
-  },
-});
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(routerMiddleware(history)),
+  preloadedState
+})
 
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;

@@ -1,0 +1,68 @@
+@import "./variables.scss";
+
+body {
+  .ant-layout {
+    background-color: $white;
+    overflow-y: scroll;
+  }
+  .radioButton {
+    .ant-radio-group {
+      .ant-radio-button {
+        border-radius: 2px;
+        border: solid 1px $border-btn-color;
+        font-family: $font;
+        font-size: 16px;
+        font-weight: 500;
+        font-stretch: normal;
+        font-style: normal;
+        .ant-radio-button-checked {
+          color: $blue;
+        }
+      }
+    }
+  }
+  .ant-row.wrap {
+    border-radius: 6px;
+    border: solid 1px $card-border-color;
+    color: $card-font-color;
+    background-color: $white;
+    &:hover {
+      opacity: 0.8;
+    }
+    .description {
+      padding: 23px 26px;
+      cursor: pointer;
+    }
+    .heart {
+      border-radius: 0 6px 6px 0;
+      background-color: $icon-background-color;
+      cursor: pointer;
+    }
+    .info {
+      font-size: 11px;
+      color: #767676;
+      margin-bottom: 7px;
+    }
+  }
+
+  .ant-select {
+    width: 240px;
+    .ant-select-selector{
+      border-radius: 4px;
+      border: solid 1px #2e2e2e;
+      background-color: #fff;
+    }
+  }
+
+  .anticon-clock-circle {
+    color: $card-font-color;
+  }
+  .anticon-heart {
+    font-size: 24px;
+    background: $icon-background-color;
+    color: $heard-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
