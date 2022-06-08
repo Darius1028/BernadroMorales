@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Row, Col, Radio, Select, Avatar, Image } from "antd";
 import { getData, IPage  } from '../slices/infoApi/data.thunks';
-import { action, selectors, Item } from '../slices/infoApi/data';
+import { selectors, Item } from '../slices/infoApi/data';
 import { Items } from './items';
 import { PaginationFooter } from './paginationFooter';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,9 +21,13 @@ export const Dashboard = () => {
     getItems( { page: 0, value: item } );
   };
 
+  useEffect(() => { 
+    window.localStorage.clear();
+ });
 
   useEffect(() => { 
     const temp:Item = data.items.filter( (item:Item) => item.params === data.params)[0];
+    console.log(data.favoriteHits);
     if( temp ){
       setItem(temp);
     }
@@ -68,7 +72,10 @@ export const Dashboard = () => {
         </Col>
       </Row>
       <Row gutter={[24, 24]}>
-          <Items item={item} />
+          <Items 
+          item={item} 
+          favoriteHits={data.favoriteHits}
+          />
       </Row>
       <PaginationFooter getItems={getItems} item={item} />
     </div>

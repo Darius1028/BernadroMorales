@@ -1,4 +1,4 @@
-import { createSlice, AnyAction, current } from "@reduxjs/toolkit";
+import { createSlice, AnyAction, PayloadAction } from "@reduxjs/toolkit";
 import { getData } from "./data.thunks";
 import { RootState } from './../../store';
 
@@ -8,11 +8,6 @@ export interface IHits {
   story_title: string;
   story_url: string;
   created_at: string;
-}
-
-export interface IHitsPerPage {
-  page: number;
-  hits: IHits[];
 }
 
 export interface Item {
@@ -30,9 +25,9 @@ export interface dataState {
   error: string | null;
   page: number | null;
   query: string | null;
-
   params: string;
   items: Item[]; 
+  favoriteHits: string[]
 }
 
 const initialState: dataState = {
@@ -41,7 +36,9 @@ const initialState: dataState = {
   page: null,
   query: null,
   params: '',
-  items: []
+  items: [],
+  favoriteHits: []
+
 };
 
 const getDataState = (state: RootState): dataState => state.data.list;
@@ -63,6 +60,9 @@ export const extraReducers = {
     if(!state.items) {
       state.items = [];
     }
+    if(!state.favoriteHits) {
+      state.favoriteHits = [];
+    }
   },
   [getData.fulfilled.type]: (state: dataState, {payload}: AnyAction): void => {
     if( payload.data ) 
@@ -73,7 +73,17 @@ export const extraReducers = {
       state.params = payload.data.params;
       if( state.items.filter( item => item.params === payload.data.params).length === 0 )
       {
-        state.items = [...state.items, payload.data ];
+
+        const items: IHits[] = payload.data.hits.filter((elem: IHits) => {
+          return (
+            elem.author !== null &&
+            elem.created_at !== null &&
+            elem.story_title !== null &&
+            elem.story_url !== null
+          );
+        });
+  
+        state.items = [...state.items, {...payload.data ,  hits: items  }];
       }  
     }
   },
@@ -87,9 +97,13 @@ const dataSlice = createSlice({
   name: 'data',
   initialState,
   reducers: {
-    clearData: (state: dataState) => {
-      state.items = [];
-    },
+    addFavoriteHit: ( state: dataState, action: PayloadAction<string>) => {
+      if (!state.favoriteHits.includes(action.payload)) {
+        state.favoriteHits.push(action.payload);
+      } else {
+        state.favoriteHits.splice(state.favoriteHits.indexOf(action.payload), 1);
+      } 
+    }
   },
   extraReducers,
 });
