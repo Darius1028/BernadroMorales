@@ -1,51 +1,59 @@
 import { useState, useEffect } from "react";
 import { Row, Col, Radio, Select, Avatar, Image } from "antd";
-import { getData, IPage  } from '../slices/infoApi/data.thunks';
-import { selectors, Item } from '../slices/infoApi/data';
-import { Items } from './items';
-import { PaginationFooter } from './paginationFooter';
-import { useDispatch, useSelector } from 'react-redux';
-import { LanguageTypes } from './interfaces';
+import { getData, IPage } from "../slices/infoApi/data.thunks";
+import { selectors, Item } from "../slices/infoApi/data";
+import { Items } from "./items";
+import { PaginationFooter } from "./paginationFooter";
+import { Loader } from "./loader";
+import { useDispatch, useSelector } from "react-redux";
+import { LanguageTypes } from "./interfaces";
 
 import { RootState } from "../slices/rootReducer";
 
 const { Option } = Select;
 
 export const Dashboard = () => {
-  const [item, setItem] = useState<Item>( { nbHits: 0, page: 0, nbPages: 0, hitsPerPage: 0, query: '', hits: [], params:'' });
+  const [item, setItem] = useState<Item>({
+    nbHits: 0,
+    page: 0,
+    nbPages: 0,
+    hitsPerPage: 0,
+    query: "",
+    hits: [],
+    params: "",
+  });
   const dispatch = useDispatch();
   const data = useSelector((state: RootState) => selectors.getDataState(state));
 
-
-  const handleChange = (item: string) => { 
-    getItems( { page: 0, value: item } );
+  const handleChange = (item: string) => {
+    getItems({ page: 0, value: item });
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     window.localStorage.clear();
- });
+  });
 
-  useEffect(() => { 
-    const temp:Item = data.items.filter( (item:Item) => item.params === data.params)[0];
-    console.log(data.favoriteHits);
-    if( temp ){
+  useEffect(() => {
+    const temp: Item = data.items.filter((item: Item) => item.params === data.params)[0];
+
+    if (temp) {
       setItem(temp);
     }
- }, [data] );
-
+  }, [data]);
 
   const getItems = async (value: IPage) => {
-    const temp:Item = data.items.filter( (item:Item) => item.page === value.page && item.query === value.value )[0];
-    if( temp ){
+    const temp: Item = data.items.filter(
+      (item: Item) => item.page === value.page && item.query === value.value
+    )[0];
+    if (temp) {
       setItem(temp);
-    }
-    else {
+    } else {
       await dispatch<any>(getData(value));
     }
   };
 
   return (
-    <div className="table">
+    <div className='table'>
       <Row style={{ marginBottom: "38px" }}>
         <Col span={24} className={"radioButton"}>
           <Radio.Group value={"all"}>
@@ -60,6 +68,7 @@ export const Dashboard = () => {
                 <Avatar
                   src={
                     <Image
+                      preview={false}
                       src={`assets/${option.value}.png`}
                       style={{ width: 15 }}
                     />
@@ -71,13 +80,17 @@ export const Dashboard = () => {
           </Select>
         </Col>
       </Row>
-      <Row gutter={[24, 24]}>
-          <Items 
-          item={item} 
-          favoriteHits={data.favoriteHits}
-          />
-      </Row>
-      <PaginationFooter getItems={getItems} item={item} />
+
+      {data.loading ? (
+        <Loader />
+      ) : (
+        <>
+          <Row gutter={[24, 24]}>
+            <Items item={item} favoriteHits={data.favoriteHits} />
+          </Row>
+          <PaginationFooter getItems={getItems} item={item} />
+        </>
+      )}
     </div>
   );
 };

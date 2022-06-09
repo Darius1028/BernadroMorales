@@ -54,4 +54,15 @@ body {
     overflow-y: auto;
   }
 
+  .spin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+
+  .icon {
+    margin: 20px;
+  }
+
 }
